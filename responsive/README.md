@@ -1,9 +1,9 @@
-#Responsive Design
+# Responsive Design
 
 Comp20 Lab 4
 October 2, 2018
 
-#Overview
+# Overview
 
 -All aspects of this lab have been correctly implemented to my knowledge.
 
