@@ -1,0 +1,30 @@
+body {
+	font: serif;
+	font-size: 30px;
+	color: black;
+	background-color:lightblue;
+	text-align: center;
+
+}
+
+h2{
+	font-size: 60px;
+	color: magenta; 
+	font-style: oblique;
+}
+
+h3{
+	font-size: 100px;
+	color: green;
+	text-decoration: underline;
+	font-style: oblique;
+	margin-top: 5px;
+}
+#title{
+	color: black;
+	font-size: 60px;
+}
+#lyrics{
+	color: red;
+	font-size:30px;
+}
