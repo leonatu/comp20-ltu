@@ -4,7 +4,6 @@ body {
 	color: black;
 	background-color:lightblue;
 	text-align: center;
-
 }
 
 h2{
@@ -20,10 +19,12 @@ h3{
 	font-style: oblique;
 	margin-top: 5px;
 }
+
 #title{
 	color: black;
 	font-size: 60px;
 }
+
 #lyrics{
 	color: red;
 	font-size:30px;
