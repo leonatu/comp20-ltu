@@ -45,40 +45,33 @@ var stops = [
 
 ];
 
-var poly=[];
-
 function setMarkers(map){
-	var image = {
-          url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-          // This marker is 20 pixels wide by 32 pixels high.
-          size: new google.maps.Size(20, 32),
-          // The origin for this image is (0, 0).
-          origin: new google.maps.Point(0, 0),
-          // The anchor for this image is the base of the flagpole at (0, 32).
-          anchor: new google.maps.Point(0, 32)
-        };
-        // Shapes define the clickable region of the icon. The type defines an HTML
-        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
-        // The final coordinate closes the poly by connecting to the first coordinate.
-        var shape = {
-          coords: [1, 1, 1, 20, 18, 20, 18, 1],
-          type: 'poly'
-        };
+	
+	// Shapes define the clickable region of the icon. The type defines an HTML
+	// <area> element 'poly' which traces out a polygon as a series of X,Y points.
+    // The final coordinate closes the poly by connecting to the first coordinate.
+    var shape = {
+        coords: [1, 1, 1, 20, 18, 20, 18, 1],
+        type: 'poly'
+    };
 
-        for (var i = 0; i < stops.length; i++) {
-        	var station = stops[i];
-          	var marker = new google.maps.Marker({
-            position: {lat: station[1], lng: station[2]},
-            map: map,
-            icon: image,
-            shape: shape,
-            title: station[0],
-            zIndex: station[3]
+    for (var i = 0; i < stops.length; i++) {
+        var station = stops[i];
+        var marker = new google.maps.Marker({
+        position: {lat: station[1], lng: station[2]},
+        map: map,
+        icon: {
+           	url: "mbta.png",
+            size: new google.maps.Size(40, 40),
+            scaledSize: new google.maps.Size(40, 40)
+        },
+        shape: shape,
+        title: station[0],
+        zIndex: station[3]
          });
 
-        }
-
-        setPolyline(map);
+    }
+    setPolyline(map);
 }
      
 var BraintreeCoordinates = [
@@ -116,8 +109,8 @@ function setPolyline(map){
     geodesic: true,
     strokeColor: '#FF0000',
     strokeOpacity: 1.0,
-    strokeWeight: 2
-     });
+    strokeWeight: 5
+    });
 
     BPath.setMap(map);
 
@@ -127,7 +120,7 @@ function setPolyline(map){
     geodesic: true,
     strokeColor: '#FF0000',
     trokeOpacity: 1.0,
-    strokeWeight: 2
+    strokeWeight: 5
     });
 
      APath.setMap(map);
@@ -149,7 +142,7 @@ function getMyLocation(){
 
 function renderMap(){
 	me = new google.maps.LatLng(myLat, myLng);
-	// Update map and go there...
+	// My location
 	map.panTo(me);
 				
 	// Create a marker
