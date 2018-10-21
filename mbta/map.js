@@ -1,6 +1,7 @@
 var map;
 var marker;
 var infowindow;
+var prevMarker;
 
 function initMap() {
 	var myLat = 42.352271;
@@ -20,56 +21,112 @@ function initMap() {
 
 var stops = [
 
-['South Station', 42.352271, -71.05524200000001, 1],
-['Andrew', 42.330154, -71.057655, 2],
-['Porter Square',   42.3884, -71.11914899999999,3 ],
-['Harvard Square',  42.373362, -71.118956,4],
-['JFK/UMass', 42.320685, -71.052391, 5],
-['Savin Hill', 42.31129, -71.053331, 6],
-['Park Street', 42.35639457,-71.062424, 7],
-['Broadway', 42.342622, -71.056967,8],
-['North Quincy', 42.275275, -71.029583, 9],
-['Shawmut', 42.29312583, -71.06573796000001, 10],
-['Davis', 42.39674, -71.121815, 11],
-['Alewife', 42.395428, -71.142483, 12],
-['Kendall/MIT', 42.36249079, -71.08617653, 13],
-['Charles/MGH', 42.361166, -71.070628, 14],
-['Downtown Crossing', 42.355518 , -71.060225, 15],
-['Quincy Center', 42.251809, -71.005409, 16],
-['Quincy Adams', 42.233391, -71.007153, 17],
-['Ashmont', 42.284652, -71.06448899999999, 18],
-['Wollaston', 42.2665139, -71.0203369, 19],
-['Fields Corner', 42.300093, -71.061667, 20],
-['Central Square', 42.365486, -71.103802, 21],
-['Braintree', 42.2078543, -71.0011385,22]
+['South Station', 42.352271, -71.05524200000001, 1, "place-sstat"],
+['Andrew', 42.330154, -71.057655, 2, "place-andrw"],
+['Porter Square',   42.3884, -71.11914899999999, 3, "place-portr" ],
+['Harvard Square',  42.373362, -71.118956, 4, "place-harsq"],
+['JFK/UMass', 42.320685, -71.052391, 5, "place-jfk"],
+['Savin Hill', 42.31129, -71.053331, 6, "place-shmnl"],
+['Park Street', 42.35639457,-71.062424, 7, "place-pktrm"],
+['Broadway', 42.342622, -71.056967, 8, "place-brdwy"],
+['North Quincy', 42.275275, -71.029583, 9, "place-nqncy"],
+['Shawmut', 42.29312583, -71.06573796000001, 10, "place-smmnl"],
+['Davis', 42.39674, -71.121815, 11, "place-davis"],
+['Alewife', 42.395428, -71.142483, 12, "place-alfcl"],
+['Kendall/MIT', 42.36249079, -71.08617653, 13, "place-knncl"],
+['Charles/MGH', 42.361166, -71.070628, 14, "place-chmnl"],
+['Downtown Crossing', 42.355518 , -71.060225, 15, "place-dwnxg"],
+['Quincy Center', 42.251809, -71.005409, 16, "place-qnctr"],
+['Quincy Adams', 42.233391, -71.007153, 17, "place-qamnl"],
+['Ashmont', 42.284652, -71.06448899999999, 18, "place-asmnl"],
+['Wollaston', 42.2665139, -71.0203369, 19, "place-wlsta"],
+['Fields Corner', 42.300093, -71.061667, 20, "place-fldcr"],
+['Central Square', 42.365486, -71.103802, 21, "place-cntsq"],
+['Braintree', 42.2078543, -71.0011385, 22, "place-brntn"]
 
 ];
 
+var stationClick =[];
+
 function setMarkers(map){
+
 	
-	// Shapes define the clickable region of the icon. The type defines an HTML
-	// <area> element 'poly' which traces out a polygon as a series of X,Y points.
-    // The final coordinate closes the poly by connecting to the first coordinate.
-    var shape = {
-        coords: [1, 1, 1, 20, 18, 20, 18, 1],
-        type: 'poly'
-    };
-
     for (var i = 0; i < stops.length; i++) {
-        var station = stops[i];
-        var marker = new google.maps.Marker({
-        position: {lat: station[1], lng: station[2]},
-        map: map,
-        icon: {
-           	url: "mbta.png",
-            size: new google.maps.Size(40, 40),
-            scaledSize: new google.maps.Size(40, 40)
-        },
-        shape: shape,
-        title: station[0],
-        zIndex: station[3]
-         });
 
+    	var contentString = ""; 
+    	var station = stops[i];
+
+        var infowindow = new google.maps.InfoWindow({
+        	content: station[0]
+        })
+
+    	var marker = new google.maps.Marker({
+        	position: {lat: station[1], lng: station[2]},
+        	map: map,
+        	icon: {
+           		url: "mbta.png",
+            	size: new google.maps.Size(40, 40),
+            	scaledSize: new google.maps.Size(40, 40)
+        	},
+        	infowindow: infowindow,
+        	title: station[0],
+        	zIndex: station[3],
+        	customInfo: stops[i][4] 	//put station ID info into each marker 
+    	});
+
+     	stationClick[i] = marker;
+
+
+		google.maps.event.addListener(stationClick[i], 'click', function() {
+
+			var request = new XMLHttpRequest();
+			request.open("GET", "https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id=" + this.customInfo, true);
+
+			
+			//arrow function doesn't have own "this"; retains "this" value from its context
+		 	request.onreadystatechange = () => { 
+		 		if (request.readyState == 4 && request.status == 200) {
+		 			string = request.responseText;		 			
+		 			info = JSON.parse(string);
+		 			var lengthData = info.data.length;	//# of departure times for each station
+		 			var departures = [];
+
+		 			if (lengthData > 10) {
+		 				lengthData = 10; 	//only get the next 10 subway times 
+		 			}
+		 			for (var j = 0; j < lengthData; j++) {
+		 				if (info.data[j].attributes.departure_time != undefined) {
+		 					departures.push(info.data[j].attributes.departure_time.substring(11, 16)); //only display times 
+		 				}
+		 			}
+
+		 			console.log(departures);	//DELETE AFTER
+		 		
+		 			for (var x = 0; x < departures.length; x++){
+		 				contentString +='<br>' + departures[x] 	//save all the dept time info into a formatted string
+		 			 	
+		 			}
+
+		 			this.infowindow.setContent("Station" + "<br>" + "Departure Times: " + contentString);
+				}
+				
+		 	}
+		 	request.send();
+
+		 	//checks if there's a window already open, close it if there is 
+            if (prevMarker) {
+            	prevMarker.infowindow.close();
+            	contentString = "";
+            	prevMarker = this;
+            	this.infowindow.open(map, this);
+            } 
+            else {
+            	this.infowindow.open(map, this);
+            	prevMarker = this;
+            }
+
+		}) 
+    	
     }
     setPolyline(map);
 }
@@ -159,3 +216,25 @@ function renderMap(){
 		infowindow.open(map, marker);
 	});		
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
