@@ -49,7 +49,6 @@ var stops = [
 var stationClick =[];
 
 function setMarkers(map){
-
 	
     for (var i = 0; i < stops.length; i++) {
 
@@ -82,32 +81,40 @@ function setMarkers(map){
 			var request = new XMLHttpRequest();
 			request.open("GET", "https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id=" + this.customInfo, true);
 
-			
 			//arrow function doesn't have own "this"; retains "this" value from its context
 		 	request.onreadystatechange = () => { 
 		 		if (request.readyState == 4 && request.status == 200) {
 		 			string = request.responseText;		 			
 		 			info = JSON.parse(string);
-		 			var lengthData = info.data.length;	//# of departure times for each station
-		 			var departures = [];
 
-		 			if (lengthData > 10) {
-		 				lengthData = 10; 	//only get the next 10 subway times 
-		 			}
-		 			for (var j = 0; j < lengthData; j++) {
-		 				if (info.data[j].attributes.departure_time != undefined) {
-		 					departures.push(info.data[j].attributes.departure_time.substring(11, 16)); //only display times 
-		 				}
-		 			}
+		 			if (info != undefined && info.data != undefined){
 
-		 			console.log(departures);	//DELETE AFTER
+				 		var lengthData;
+				 		if (info.data.length != undefined){
+				 			lengthData = info.data.length;	//# of departure times for each station
+				 		}
+
+			 			var departures = [];
 		 		
-		 			for (var x = 0; x < departures.length; x++){
-		 				contentString +='<br>' + departures[x] 	//save all the dept time info into a formatted string
-		 			 	
-		 			}
+			 			if (lengthData > 10) {
+			 				lengthData = 10; 	//only get the next 10 subway times 
+			 			}
+			 			for (var j = 0; j < lengthData; j++) {
+			 				if (info.data[j].attributes.departure_time != undefined) {
+			 					departures.push(info.data[j].attributes.departure_time.substring(11, 16)); //only display times 
+			 				}
+			 			}
 
-		 			this.infowindow.setContent("Station" + "<br>" + "Departure Times: " + contentString);
+			 			console.log(departures);	//DELETE AFTER
+	 		
+			 			for (var x = 0; x < departures.length; x++){
+			 				contentString +='<br>' + departures[x] 	//save all the dept time info into a formatted string
+			 			 	
+			 			}
+
+		 			this.infowindow.setContent(this.title + "<br>"+ "<br>" + "Departure Times: " + contentString);
+
+		 			}
 				}
 				
 		 	}
