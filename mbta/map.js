@@ -2,6 +2,7 @@ var map;
 var marker;
 var infowindow;
 var prevMarker;
+var myinfowindow;
 
 function initMap() {
 	var myLat = 42.352271;
@@ -99,20 +100,20 @@ function setMarkers(map){
 			 			if (lengthData > 10) {
 			 				lengthData = 10; 	//only get the next 10 subway times 
 			 			}
+
 			 			for (var j = 0; j < lengthData; j++) {
 			 				if (info.data[j].attributes.departure_time != undefined) {
 			 					departures.push(info.data[j].attributes.departure_time.substring(11, 16)); //only display times 
 			 				}
 			 			}
 
-			 			console.log(departures);	//DELETE AFTER
+			 		//	console.log(departures);	//DELETE AFTER
 	 		
 			 			for (var x = 0; x < departures.length; x++){
 			 				contentString +='<br>' + departures[x] 	//save all the dept time info into a formatted string
-			 			 	
 			 			}
 
-		 			this.infowindow.setContent(this.title + "<br>"+ "<br>" + "Departure Times: " + contentString);
+		 				this.infowindow.setContent(this.title + "<br>"+ "<br>" + "Departure Times: " + contentString);
 
 		 			}
 				}
@@ -131,9 +132,7 @@ function setMarkers(map){
             	this.infowindow.open(map, this);
             	prevMarker = this;
             }
-
 		}) 
-    	
     }
     setPolyline(map);
 }
@@ -178,7 +177,6 @@ function setPolyline(map){
 
     BPath.setMap(map);
 
-
     var APath = new google.maps.Polyline({
     path: AshmontCoordinates,
     geodesic: true,
@@ -201,7 +199,6 @@ function getMyLocation(){
 	else {
 		alert("Geolocation is not supported by your web browser.");
 	}
-
 }
 
 function renderMap(){
@@ -216,32 +213,42 @@ function renderMap(){
 		});
 
 	marker.setMap(map);
-					
+
+	myinfowindow = new google.maps.InfoWindow();
+
 	// Open info window on click of marker
 	google.maps.event.addListener(marker, 'click', function() {
-		infowindow.setContent(marker.title);
-		infowindow.open(map, marker);
-	});		
+		myinfowindow.open(map, marker);
+	});
+
+	findClosest(me,map);
 }
 
+function findClosest(me,map){
 
+	var shortestDistance = google.maps.geometry.spherical.computeDistanceBetween(me, new google.maps.LatLng({lat: stops[0][1], lng: stops[0][2]}));
+	var smallestLatLng = stops[0];
 
+	for (var y = 0; y < stops.length; y++){
+		var distance = google.maps.geometry.spherical.computeDistanceBetween(me, new google.maps.LatLng({lat: stops[y][1], lng: stops[y][2]})); 
 
+		if (distance < shortestDistance){
+			shortestDistance = distance;
+			smallestLatLng = stops[y];
+		}
+	}
 
+	var closestPath = new google.maps.Polyline({
+	    path: [me, {lat: smallestLatLng[1], lng: smallestLatLng[2]}],
+	    geodesic: true,
+	    strokeColor: 'green',
+	    strokeOpacity: 1.0,
+	    strokeWeight: 5
+	    });
 
+    closestPath.setMap(map); 	//polyline connecting you to closest station
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    myinfowindow.setContent("Closest station: " + "<br>" + smallestLatLng[0] + "<br>" + "<br>" + parseFloat(shortestDistance/1609).toFixed(2) 
+    	+ " miles away");
+}
 
