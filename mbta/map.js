@@ -106,18 +106,14 @@ function setMarkers(map){
 			 					departures.push(info.data[j].attributes.departure_time.substring(11, 16)); //only display times 
 			 				}
 			 			}
-
-			 		//	console.log(departures);	//DELETE AFTER
-	 		
+			 			
 			 			for (var x = 0; x < departures.length; x++){
 			 				contentString +='<br>' + departures[x] 	//save all the dept time info into a formatted string
 			 			}
 
 		 				this.infowindow.setContent(this.title + "<br>"+ "<br>" + "Departure Times: " + contentString);
-
 		 			}
 				}
-				
 		 	}
 		 	request.send();
 
