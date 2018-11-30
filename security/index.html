@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Security</title>
+	<link rel="stylesheet" href="style.css"/>
 </head>
 
 <body>
@@ -15,7 +16,7 @@
 
 
 	<h2>II. Methodology</h2>
-
+	<p>Initially, black box testing was performed--that is, without the source code. Using this method, one vulnerability was immediately identified, and an injection attack was perfomed. No security tools were used during this process; it was as simple as modifying the query string in the URL. In order to further identify more vulnerabilities, white box testing was performed--the source code on Heroku and on github was made available to be read and analyzed. Using this method, two more vulnerabilities were identified. One of them was identified by reading through the source code and noticing exposed sensitive data. The other one was identified using curl, a tool used on command lines or scripts to transfer data with URLs. This was used specifically for Cross-Site Scripting in which a script of choice was injected into the user's web application.</p> 
 
 	<h2>III. Abstract of Findings</h2>
 

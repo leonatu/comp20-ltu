@@ -1,0 +1,23 @@
+h1{
+	font-size: 35px;
+}
+
+h2{
+	font-size: 25px;
+	text-decoration: underline;
+}
+
+h3{
+	font-size: 20px;
+	color: red;
+	text-decoration: underline;
+}
+
+h4{
+	font-size: 20px;
+}
+
+img {
+  max-width:100%;
+  height:auto;
+}
