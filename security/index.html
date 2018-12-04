@@ -22,45 +22,94 @@
 
 	<h2>IV. Issues Found</h2>
 
-	<h3>Issue #1: Injection Attack</h3>
+	<h3>Issue #1: Database Injection Flaw</h3>
 	
 	<h4>Location/Page of Issue</h4>
+	<p>This vulnerability was found in the /scores.json route of the web app, specifically in the username query string parameter in the GET request.</p>
+
 	<h4>Severity of Issue</h4>
+	<p>This is a high-risk security issue. In fact, it is the #1 application security risk on the OWASP Top 10 list (2017). An attacker conducting an injection attack can insert hostile data, which could execute unintended commands or access data without proper authorization. Injection flaws are very prevalent, and this can result in data loss, corruption, disclosure to unauthorized parties, loss of accountability, denial of access, or even complete host takeover. For instance, an attacker may be able to obtain emails or other personal information in this way.</p>
+
 	<h4>Description of Issue</h4>
+	<p>This isue was found during black box testing. No tools were needed to perform this attack--only basic knowledge and awareness of common security issues were needed. After going through notes and references, a simple modification was made in the query string parameter in the URL and as a result, unauthorized data was returned from the database. (See image below for attack and unauthorized returned data from database).
+
+
 	<h4>Proof of Vulnerability</h4>
 	<p><img src="injectionattack.png" alt="Injection Attack"/></p>
+
 	<h4>Resolution</h4>
-			
-	<h3>Issue #2: Use of Hard-Coded Password</h3>
+	<ul>
+		<li>Do not allow operators to be used in the username query.</li>
+	</ul>
+	<br>
+
+	<h3>Issue #2: Use of Hard-Coded Credentials</h3>
 	
 	<h4>Location/Page of Issue</h4>
+	<p>A hard-coded username and password for Ilya's database was found in the source code cloned from Heroku, specifically in the index.js file. (The purpose of this was to make a connection from the node server to the database server). </p>
+
 	<h4>Severity of Issue</h4>
+	<p>This is a high-risk security issue, and it is #7 on the 2011 CWE/SANS Top 25 Most Dangerous Software Errors. In general, this is a really bad programming practice because it allows an attacker to bypass the authentication that has been configured by the software administrator. Since this hard-coded password is the password to the database, it makes the information stored in the database vulnerable, and often times this information is sensitive and should not be exposed. Personal information such as telephone numbers, addresses, etc. could be obtained and exploited for malicious purposes.</p>
+
 	<h4>Description of Issue</h4>
+	<p>These credentials were found by reading through the source code cloned from Heroku. After careful analysis of the code, the username and password were identified in the format of "mongodb://username:password@ds......."
+
 	<h4>Proof of Vulnerability</h4>
 	<p><img src="sensitivedata.png" alt="Exposed password in plaintext"/></p>
+
 	<h4>Resolution</h4>
+	<ul>
+		<li>Encrypt sensitive data</li>
+		<li>Put username and password in a .env file and put .env into .gitignore file so that it will not be pushed to the remote repository with the source code: </li>
+		<img src="env.png" alt="Hiddden Credentials"/>
+	</ul>
+	<br>
 
 	<h3>Issue #3: Cross-Site Scripting (XSS)</h3>
 	
 	<h4>Location/Page of Issue</h4>
+	<p>This vulnerability stems from the source code cloned from Heroku in the index.js file under the POST request (/submit).</p>
+
 	<h4>Severity of Issue</h4>
+	<p>This is a high-risk security issue; it is listed as #7 on the OWASP Top 10 list (2017) and is regarded as the second most prevalent issue in the OWASP Top 10. Approximately 2/3 of applications are susceptible to XSS attacks, allowing attackers to hijack user sessions and redirect the user to malicious sites.</p>
+
 	<h4>Description of Issue</h4>
 
+	<p>Initially, an attempt at XSS was performed by sending a script in place of a username, a string, using curl during black box testing. Nothing happened after the attempt...BUT on the homepage, the input for the username returned "null," leading to suspicions that the web app did not properly retrieve the names of the users in the first place.
 	<p><img src="beforexss.png" alt="Usernames of players not retrieved successfully"/></p>
+
+	During white box testing, I noticed that the score is not converted from the default string format to an integer when the data is sent from the client. As such, it was possible to still perform XSS by sending a script in place of an actual score. This was confirmed by checking in Ilya's database where the score was indeed saved as a string.
 	<p><img src="submitcode.png" alt="Problem in code"/></p>
 
 	<h4>Proof of Vulnerability</h4>
+	<p>Use of curl to perform XSS attack</p>
 	<p><img src="xss.png" alt="Tool used for XSS"/></p>
+
+	<p>Script is saved into the database as a score</p>
 	<p><img src="xssproof.png" alt="Proof of successful XSS"/></p>
+
+	<p>Redirection of homepage to Buzzfeed after a successful XSS attack</p>
 	<p><img src="afterxss.png" alt="Redirection of web app"/></p>
 
 	<h4>Resolution</h4>
-
-
+	<p>User input, which should not be trusted, should be separated from active browser content. This can be done using frameworks that automatically escape XSS by design (Ruby on Rails, React JS), applying context-sensitive encoding, and by enabling a Content Security Policy (CSP), a defense-in-depth mitigating control against XSS. User data should also be validated. <br><br> Examples:</p>
+	<ul>
+		<li>Strip all special characters before sending data: username = username.replace(/[^\w\s]/gi, ''); 
+		<li>Change &lt; to &amp;lt;</li>
+		<li>Change &gt; to &amp;gt;</li>
+		<li>For the case of this web app specifically, the score should also be converted from a string to an integer: score = parseInt(score); </li>
+	</ul>
+	<br>
 
 	<h2>V. Conclusion</h2>
 
 	<h2>VI. References</h2>
+	<ul>
+		<li><a href="https://www.owasp.org/images/7/72/OWASP_Top_10-2017_%28en%29.pdf.pdf">https://www.owasp.org/images/7/72/OWASP_Top_10-2017_%28en%29.pdf.pdf</a></li>
+		<li><a href="http://cwe.mitre.org/top25/#CWE-798">http://cwe.mitre.org/top25/#CWE-798</a></li>
+		<li><a href="http://cwe.mitre.org/data/definitions/259.html">http://cwe.mitre.org/data/definitions/259.html</a></li>
+		<li><a href="https://www.npmjs.com/package/dotenv">https://www.npmjs.com/package/dotenv</a></li>
+	</ul>
 
 	
 </body>
