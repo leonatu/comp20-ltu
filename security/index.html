@@ -16,9 +16,10 @@
 
 
 	<h2>II. Methodology</h2>
-	<p>Initially, black box testing was performed--that is, without the source code. Using this method, one vulnerability was immediately identified, and an injection attack was perfomed. No security tools were used during this process; it was as simple as modifying the query string in the URL. In order to further identify more vulnerabilities, white box testing was performed--the source code on Heroku and on github was made available to be read and analyzed. Using this method, two more vulnerabilities were identified. One of them was identified by reading through the source code and noticing exposed sensitive data. The other one was identified using curl, a tool used on command lines or scripts to transfer data with URLs. This was used specifically for Cross-Site Scripting in which a script of choice was injected into the user's web application.</p> 
+	<p>Initially, black box testing was performed--that is, without the source code. Using this method, one vulnerability was immediately identified, and an injection attack was perfomed. No security tools were used during this process; it was as simple as modifying the query string in the URL. In order to further identify more vulnerabilities, white box testing was performed--the source code on Heroku and on github were made available to be read and analyzed. Using this method, two more vulnerabilities were identified. One of them was identified by reading through the source code and noticing exposed sensitive data. The other one was identified using curl, a tool used on command lines or scripts to transfer data with URLs. This was used specifically for Cross-Site Scripting, in which a script of choice was sent to the user's web application.</p> 
 
 	<h2>III. Abstract of Findings</h2>
+	<p>Serveral high-risk vulnerabilities were identified in this web application. These include access to unauthorized data, exposure of sensitive information such as usernames and passwords, and accepting unvalidated and untrusted user input, which could lead to hijacked user sessions or redirections to malicious websites. These vulnerabilities are some of the most common and serious ones according to the Open Web Application Security Project (OWASP), a world-wide organization focused on improving the security of software, and to Common Weaknesses Enumeration (CWE), a "community-developed list of common software security weaknesses" that serves "as a baseline for weakness identification, mitigation, and prevention efforts." The attacks conducted on Ilya's web application were fairly simple to do, requiring little to no security tools, and making it quick and easy for attackers to exploit a web application like this. Simple precautions such as validating user input and being more careful with sensitive data could tremendously improve the security of this web application.</p>
 
 	<h2>IV. Issues Found</h2>
 
@@ -31,7 +32,7 @@
 	<p>This is a high-risk security issue. In fact, it is the #1 application security risk on the OWASP Top 10 list (2017). An attacker conducting an injection attack can insert hostile data, which could execute unintended commands or access data without proper authorization. Injection flaws are very prevalent, and this can result in data loss, corruption, disclosure to unauthorized parties, loss of accountability, denial of access, or even complete host takeover. For instance, an attacker may be able to obtain emails or other personal information in this way.</p>
 
 	<h4>Description of Issue</h4>
-	<p>This isue was found during black box testing. No tools were needed to perform this attack--only basic knowledge and awareness of common security issues were needed. After going through notes and references, a simple modification was made in the query string parameter in the URL and as a result, unauthorized data was returned from the database. (See image below for attack and unauthorized returned data from database).
+	<p>This issue was found during black box testing. No tools were needed to perform this attack--only basic knowledge and awareness of common security issues were needed. After going through notes and references, a simple modification was made in the query string parameter in the URL, and as a result, unauthorized data was returned from the database. (See image below for attack and unauthorized returned data from database).</p>
 
 
 	<h4>Proof of Vulnerability</h4>
@@ -39,17 +40,17 @@
 
 	<h4>Resolution</h4>
 	<ul>
-		<li>Do not allow operators to be used in the username query.</li>
+		<li>Do not allow operators to be used in the username query/validate input.</li>
 	</ul>
 	<br>
 
 	<h3>Issue #2: Use of Hard-Coded Credentials</h3>
 	
 	<h4>Location/Page of Issue</h4>
-	<p>A hard-coded username and password for Ilya's database was found in the source code cloned from Heroku, specifically in the index.js file. (The purpose of this was to make a connection from the node server to the database server). </p>
+	<p>A hard-coded username and password for Ilya's database were found in the source code cloned from Heroku, specifically in the index.js file. (The purpose of this was to make a connection from the node server to the database server). </p>
 
 	<h4>Severity of Issue</h4>
-	<p>This is a high-risk security issue, and it is #7 on the 2011 CWE/SANS Top 25 Most Dangerous Software Errors. In general, this is a really bad programming practice because it allows an attacker to bypass the authentication that has been configured by the software administrator. Since this hard-coded password is the password to the database, it makes the information stored in the database vulnerable, and often times this information is sensitive and should not be exposed. Personal information such as telephone numbers, addresses, etc. could be obtained and exploited for malicious purposes.</p>
+	<p>This is a high-risk security issue, and it is #7 on the 2011 CWE/SANS Top 25 Most Dangerous Software Errors (CWE-798). In general, this is a really bad programming practice because it allows an attacker to bypass the authentication that has been configured by the software administrator. Since this hard-coded password is the password to the database, it makes the information stored in the database vulnerable, and often times this information is sensitive and should not be exposed. Personal information such as telephone numbers, addresses, etc. could be obtained and exploited for malicious purposes.</p>
 
 	<h4>Description of Issue</h4>
 	<p>These credentials were found by reading through the source code cloned from Heroku. After careful analysis of the code, the username and password were identified in the format of "mongodb://username:password@ds......."
@@ -102,6 +103,7 @@
 	<br>
 
 	<h2>V. Conclusion</h2>
+	<p>The vulnerabilities found on Ilya's Assignment #3 are some of the most common ones for many web applications; they are all high-risk security issues according to OWASP (2017) and CWE (2011). Exposing sensitive data in the source code and not validating client input may not affect most users from properly using an application, but for attackers, this can be one of the easiest ways to exploit personal data and/or direct many users to malicious websites. It is quick and easy to do so, so it is imperative that web applications take precautions and strengthen their security to prevent attacks. By leaving these vulnerabilities unattended, not only can customer data be compromised, but also the reliability of an organization or institution that creates the web application. The internet is integral to daily life in the 21st century; for millions of people, this means storing and sending personal info thorugh email, online banking, social networking sites, etc. Therefore, it is clear that it is now more important than ever to take the necessary precautions to avoid common security vulnerabilities as seen in this assignment. Simple precautions one should take to improve the security of his or her web appilcation include validating user input and protecting sensitive information such as through encryption.</p>
 
 	<h2>VI. References</h2>
 	<ul>
@@ -109,9 +111,7 @@
 		<li><a href="http://cwe.mitre.org/top25/#CWE-798">http://cwe.mitre.org/top25/#CWE-798</a></li>
 		<li><a href="http://cwe.mitre.org/data/definitions/259.html">http://cwe.mitre.org/data/definitions/259.html</a></li>
 		<li><a href="https://www.npmjs.com/package/dotenv">https://www.npmjs.com/package/dotenv</a></li>
+		<li><a href="http://cwe.mitre.org">http://cwe.mitre.org</a></li>
 	</ul>
-
-	
 </body>
-
 </html>
